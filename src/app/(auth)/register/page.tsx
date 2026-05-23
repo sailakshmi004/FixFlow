@@ -1,0 +1,16 @@
+import { RegisterForm } from '@/features/auth/components/register-form';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+
+export default function RegisterPage() {
+  return (
+    <Card className="border-slate-200 shadow-none">
+      <CardHeader>
+        <CardTitle>Create your account</CardTitle>
+        <CardDescription>Choose freelancer or client to start using BugNest.</CardDescription>
+      </CardHeader>
+      <CardContent>
+        <RegisterForm />
+      </CardContent>
+    </Card>
+  );
+}

@@ -1,0 +1,12 @@
+import { AuthShell } from '@/components/layout/auth-shell';
+
+export default function AuthLayout({ children }: Readonly<{ children: React.ReactNode }>) {
+  return (
+    <AuthShell
+      title="Welcome back to BugNest"
+      description="Log in or create your workspace and keep bug reports, approvals, and invoices organized."
+    >
+      {children}
+    </AuthShell>
+  );
+}
