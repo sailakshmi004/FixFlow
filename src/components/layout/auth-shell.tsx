@@ -11,9 +11,9 @@ export function AuthShell({ children, title, description }: { children: React.Re
             <div>
               <Link href={ROUTES.home} className="mb-8 inline-flex items-center gap-3 text-lg font-semibold tracking-wide text-white">
                 <span className="flex h-10 w-10 items-center justify-center rounded-2xl bg-white text-sm font-bold text-slate-950">
-                  B
+                  F
                 </span>
-                BugNest
+                FixFlow
               </Link>
               <p className="text-sm uppercase tracking-[0.28em] text-sky-300">Client-friendly bug tracking</p>
               <h1 className="mt-4 max-w-xl text-4xl font-semibold tracking-tight text-white sm:text-5xl">{title}</h1>

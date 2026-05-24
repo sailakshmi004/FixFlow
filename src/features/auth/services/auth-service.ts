@@ -134,7 +134,7 @@ export async function syncProfileFromAuthUser() {
     return profile;
   }
 
-  const fullName = (user.user_metadata?.full_name as string | undefined) ?? user.email ?? 'BugNest User';
+  const fullName = (user.user_metadata?.full_name as string | undefined) ?? user.email ?? 'FixFlow User';
   const role = (user.user_metadata?.role as Role | undefined) ?? 'freelancer';
 
   const { data: createdProfile, error: createError } = await supabase

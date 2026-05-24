@@ -1,3 +1,4 @@
+import Image from 'next/image';
 import Link from 'next/link';
 import { ArrowRight, CheckCircle2, ShieldCheck, Workflow, Sparkles, MessageSquareMore, BadgeCheck, Layers3 } from 'lucide-react';
 import { ROUTES } from '@/constants/routes';
@@ -48,7 +49,7 @@ export default function PublicHomePage() {
         <div className="space-y-8">
           <div className="flex flex-wrap items-center gap-3">
             <Badge variant="outline" className="border-slate-200 bg-white px-3 py-1 text-[11px] uppercase tracking-[0.28em] text-slate-500">
-              BugNest
+              FixFlow
             </Badge>
             <span className="inline-flex items-center gap-2 rounded-full bg-sky-100 px-3 py-1 text-xs font-medium text-sky-700">
               <Sparkles className="h-3.5 w-3.5" />
@@ -94,11 +95,21 @@ export default function PublicHomePage() {
                 <Layers3 className="h-3.5 w-3.5" />
                 Workflow preview
               </div>
-              <CardTitle>BugNest workflow</CardTitle>
+              <CardTitle>FixFlow workflow</CardTitle>
               <CardDescription>Phase 1 foundation is ready for authentication and role-based workspace routing.</CardDescription>
             </div>
           </CardHeader>
           <CardContent className="space-y-4">
+            <div className="overflow-hidden rounded-[1.75rem] border border-slate-200/70 bg-slate-100 shadow-sm">
+              <Image
+                src="/fixflow-hero-v3.svg"
+                alt="FixFlow workspace illustration"
+                width={1200}
+                height={900}
+                priority
+                className="h-auto w-full object-cover"
+              />
+            </div>
             {workflow.map((step, index) => (
               <div key={step} className="flex items-center gap-4 rounded-3xl border border-slate-200/70 bg-white px-4 py-3 shadow-sm">
                 <div className="flex h-9 w-9 items-center justify-center rounded-2xl bg-slate-950 text-sm font-semibold text-white shadow-soft">
@@ -139,7 +150,7 @@ export default function PublicHomePage() {
             </div>
             <CardTitle>Made for client communication</CardTitle>
             <CardDescription>
-              BugNest keeps the language simple so clients can report issues, review progress, and approve fixes without developer jargon.
+              FixFlow keeps the language simple so clients can report issues, review progress, and approve fixes without developer jargon.
             </CardDescription>
           </CardHeader>
         </Card>

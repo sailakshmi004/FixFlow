@@ -29,9 +29,9 @@ export function DashboardShell({ role, fullName, children }: DashboardShellProps
             <div className="border-b border-slate-200/70 px-6 py-6">
               <Link href={ROUTES.dashboard[role] as never} className="flex items-center gap-3 text-xl font-bold tracking-tight">
                 <span className="flex h-10 w-10 items-center justify-center rounded-2xl bg-slate-950 text-sm font-semibold text-white shadow-soft">
-                  B
+                  F
                 </span>
-                <span>BugNest</span>
+                <span>FixFlow</span>
               </Link>
               <p className="mt-2 text-sm text-slate-500">{ROLE_LABELS[role]} workspace</p>
             </div>

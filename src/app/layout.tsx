@@ -2,7 +2,7 @@ import type { Metadata } from 'next';
 import './globals.css';
 
 export const metadata: Metadata = {
-  title: 'BugNest',
+  title: 'FixFlow',
   description: 'Client-friendly bug tracking for freelance developers.'
 };
 

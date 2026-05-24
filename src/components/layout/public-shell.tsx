@@ -19,9 +19,9 @@ export function PublicShell({ children }: { children: React.ReactNode }) {
         <div className="mx-auto flex w-full max-w-7xl items-center justify-between px-4 py-4 sm:px-6 lg:px-8">
           <Link href={ROUTES.home} className="flex items-center gap-3 text-xl font-bold tracking-tight text-slate-950">
             <span className="flex h-10 w-10 items-center justify-center rounded-2xl bg-slate-950 text-sm font-semibold text-white shadow-soft">
-              B
+              F
             </span>
-            <span>BugNest</span>
+            <span>FixFlow</span>
           </Link>
           <nav className="hidden items-center gap-8 text-sm text-slate-600 md:flex">
             {navItems.map((item) => (
@@ -43,7 +43,7 @@ export function PublicShell({ children }: { children: React.ReactNode }) {
       <main className="relative">{children}</main>
       <footer className="relative border-t border-slate-200/70 bg-white/80 backdrop-blur-xl">
         <div className="mx-auto w-full max-w-7xl px-4 py-6 text-sm text-slate-500 sm:px-6 lg:px-8">
-          BugNest helps freelancers manage client bugs, approvals, and invoices in one place.
+          FixFlow helps freelancers manage client bugs, approvals, and invoices in one place.
         </div>
       </footer>
     </div>

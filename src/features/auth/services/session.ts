@@ -24,7 +24,7 @@ export async function getCurrentProfile(): Promise<ProfileRow | null> {
   }
 
   const role = (user.user_metadata?.role as Role | undefined) ?? DEFAULT_ROLE;
-  const fullName = (user.user_metadata?.full_name as string | undefined) ?? user.email ?? 'BugNest User';
+  const fullName = (user.user_metadata?.full_name as string | undefined) ?? user.email ?? 'FixFlow User';
 
   const { data: createdProfile } = await supabase
     .from('profiles')

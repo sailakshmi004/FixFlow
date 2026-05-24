@@ -8,7 +8,7 @@ export default function RegisterPage() {
     <Card className="border-slate-200 shadow-none">
       <CardHeader>
         <CardTitle>Create your account</CardTitle>
-        <CardDescription>Choose freelancer or client to start using BugNest.</CardDescription>
+        <CardDescription>Choose freelancer or client to start using FixFlow.</CardDescription>
       </CardHeader>
       <CardContent>
         <RegisterForm />

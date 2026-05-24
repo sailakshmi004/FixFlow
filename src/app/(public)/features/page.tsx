@@ -8,7 +8,7 @@ export default function FeaturesPage() {
       <Card className="border-slate-200 bg-white">
         <CardHeader>
           <CardTitle>Features</CardTitle>
-          <CardDescription>BugNest is designed to keep bug tracking simple for freelancers and clients.</CardDescription>
+          <CardDescription>FixFlow is designed to keep bug tracking simple for freelancers and clients.</CardDescription>
         </CardHeader>
         <CardContent className="text-sm leading-7 text-slate-600">
           The Phase 1 build includes authentication, role-based routing, dashboard shells, and the Supabase connection foundation.
