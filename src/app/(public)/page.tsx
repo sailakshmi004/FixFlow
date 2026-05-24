@@ -6,6 +6,8 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Badge } from '@/components/ui/badge';
 import { cn } from '@/lib/utils';
 
+export const dynamic = 'force-dynamic';
+
 const highlights = [
   {
     icon: Workflow,
