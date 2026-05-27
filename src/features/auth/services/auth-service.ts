@@ -24,6 +24,21 @@ function mapProfile(profile: ProfileRow | null, fallbackEmail: string, fallbackR
 export async function registerUser(values: RegisterFormValues) {
   const supabase = createSupabaseBrowserClient();
 
+  const { data: existingByEmail, error: emailLookupError } = await supabase
+    .from('profiles')
+    .select('id, role')
+    .eq('email', values.email)
+    .maybeSingle();
+  const existingEmailProfile = existingByEmail as unknown as { id: string; role: Role } | null;
+
+  if (emailLookupError) {
+    throw emailLookupError;
+  }
+
+  if (existingEmailProfile) {
+    throw new Error('This email is already registered. Please sign in or use a different email.');
+  }
+
   const { data, error } = await supabase.auth.signUp({
     email: values.email,
     password: values.password,
@@ -42,15 +57,16 @@ export async function registerUser(values: RegisterFormValues) {
   if (data.user) {
     const { data: existingProfile, error: lookupError } = await supabase
       .from('profiles')
-      .select('id')
+      .select('id, role')
       .eq('auth_user_id', data.user.id)
       .maybeSingle();
+    const existingAuthProfile = existingProfile as unknown as { id: string; role: Role } | null;
 
     if (lookupError) {
       throw lookupError;
     }
 
-    if (!existingProfile) {
+    if (!existingAuthProfile) {
       const { error: profileError } = await supabase.from('profiles').insert([
         {
           auth_user_id: data.user.id,
@@ -64,6 +80,8 @@ export async function registerUser(values: RegisterFormValues) {
       if (profileError) {
         throw profileError;
       }
+    } else if (existingAuthProfile.role !== values.role) {
+      throw new Error('This email is already linked to another role. Please sign in with the existing account.');
     }
   }
 
