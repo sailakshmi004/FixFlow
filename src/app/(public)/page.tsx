@@ -2,10 +2,12 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { ArrowRight, CheckCircle2, ShieldCheck, Workflow, Sparkles, MessageSquareMore, BadgeCheck, Layers3 } from 'lucide-react';
 import { ROUTES } from '@/constants/routes';
+import { getDashboardRoute } from '@/constants/routes';
 import { buttonVariants } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { cn } from '@/lib/utils';
+import { getCurrentProfile } from '@/features/auth/services/session';
 
 export const dynamic = 'force-dynamic';
 
@@ -42,7 +44,9 @@ const metrics = [
   ['All-in-one', 'Bugs, comments, and invoices together']
 ];
 
-export default function PublicHomePage() {
+export default async function PublicHomePage() {
+  const profile = await getCurrentProfile();
+
   return (
     <section className="mx-auto w-full max-w-7xl px-4 py-12 sm:px-6 lg:px-8 lg:py-20">
       <div className="grid gap-12 lg:grid-cols-[1.02fr_0.98fr] lg:items-center">
@@ -67,12 +71,25 @@ export default function PublicHomePage() {
           </div>
 
           <div className="flex flex-wrap gap-3">
-            <Link href={ROUTES.register} className={cn(buttonVariants({ size: 'lg' }), 'inline-flex items-center gap-2')}>
-              Start free <ArrowRight className="h-4 w-4" />
-            </Link>
-            <Link href={ROUTES.login} className={buttonVariants({ variant: 'outline', size: 'lg' })}>
-              Log in
-            </Link>
+            {profile ? (
+              <>
+                <Link href={getDashboardRoute(profile.role)} className={cn(buttonVariants({ size: 'lg' }), 'inline-flex items-center gap-2')}>
+                  Dashboard <ArrowRight className="h-4 w-4" />
+                </Link>
+                <Link href={getDashboardRoute(profile.role)} className={buttonVariants({ variant: 'outline', size: 'lg' })}>
+                  Open workspace
+                </Link>
+              </>
+            ) : (
+              <>
+                <Link href={ROUTES.register} className={cn(buttonVariants({ size: 'lg' }), 'inline-flex items-center gap-2')}>
+                  Start free <ArrowRight className="h-4 w-4" />
+                </Link>
+                <Link href={ROUTES.login} className={buttonVariants({ variant: 'outline', size: 'lg' })}>
+                  Log in
+                </Link>
+              </>
+            )}
           </div>
 
           <div className="grid gap-3 sm:grid-cols-3">
