@@ -5,6 +5,8 @@ export const ROUTES = {
   home: '/',
   login: '/login',
   register: '/register',
+  forgotPassword: '/forgot-password',
+  resetPassword: '/reset-password',
   features: '/features',
   pricing: '/pricing',
   contact: '/contact',
@@ -35,7 +37,7 @@ export const ROUTES = {
 } as const;
 
 const PROTECTED_PREFIXES = ['/freelancer', '/client', '/admin'] as const;
-const AUTH_PATHS = [ROUTES.login, ROUTES.register] as const;
+const AUTH_PATHS = [ROUTES.login, ROUTES.register, ROUTES.forgotPassword, ROUTES.resetPassword] as const;
 
 export function getDashboardRoute(role: Role): (typeof ROUTES.dashboard)[Role] {
   return ROUTES.dashboard[role];

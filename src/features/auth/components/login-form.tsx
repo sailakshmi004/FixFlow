@@ -50,6 +50,11 @@ export function LoginForm() {
         {form.formState.errors.password ? <p className="text-sm text-red-600">{form.formState.errors.password.message}</p> : null}
       </div>
       {errorMessage ? <p className="rounded-md bg-red-50 px-3 py-2 text-sm text-red-700">{errorMessage}</p> : null}
+      <div className="flex justify-end">
+        <Link href={ROUTES.forgotPassword} className="text-sm text-slate-500 hover:text-slate-700 underline underline-offset-2">
+          Forgot password?
+        </Link>
+      </div>
       <Button className="w-full" type="submit" disabled={form.formState.isSubmitting}>
         {form.formState.isSubmitting ? 'Signing in...' : 'Sign in'}
       </Button>

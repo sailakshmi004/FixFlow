@@ -175,3 +175,27 @@ export async function syncProfileFromAuthUser() {
 
   return createdProfile;
 }
+
+export async function forgotPassword(email: string) {
+  const supabase = createSupabaseBrowserClient();
+
+  const { error } = await supabase.auth.resetPasswordForEmail(email, {
+    redirectTo: `${window.location.origin}/reset-password`,
+  });
+
+  if (error) {
+    throw error;
+  }
+}
+
+export async function resetPassword(newPassword: string) {
+  const supabase = createSupabaseBrowserClient();
+
+  const { error } = await supabase.auth.updateUser({
+    password: newPassword,
+  });
+
+  if (error) {
+    throw error;
+  }
+}
