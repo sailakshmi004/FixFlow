@@ -1,6 +1,13 @@
-import { ComingSoon } from '@/components/layout/coming-soon';
+import { BugDetailView } from '@/features/bugs/components/bug-detail-view';
 
-export default function FreelancerBugDetailPage() {
-  return <ComingSoon title="Bug details" description="Detailed bug pages will be implemented in Phase 3." />;
+export const dynamic = 'force-dynamic';
+
+type PageProps = {
+  params: Promise<{ id: string }>;
+};
+
+export default async function FreelancerBugDetailPage({ params }: PageProps) {
+  const { id } = await params;
+  return <BugDetailView bugId={id} role="freelancer" />;
 }
 

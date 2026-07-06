@@ -1,19 +1,21 @@
-import { redirect } from 'next/navigation';
-import { createSupabaseServerClient } from '@/lib/supabase/server';
-import { ROUTES, getDashboardRoute } from '@/constants/routes';
-import { DEFAULT_ROLE, type Role } from '@/constants/roles';
+import { createSupabaseBrowserClient } from '@/lib/supabase/client';
 import type { ProfileRow } from '@/types/database.types';
+import { DEFAULT_ROLE, type Role } from '@/constants/roles';
 
-export async function getCurrentProfile(): Promise<ProfileRow | null> {
-  const supabase = await createSupabaseServerClient();
-  let user;
+export async function getBrowserUser() {
+  const supabase = createSupabaseBrowserClient();
 
   try {
     const { data } = await supabase.auth.getUser();
-    user = data.user;
+    return data.user ?? null;
   } catch {
     return null;
   }
+}
+
+export async function getBrowserProfile(): Promise<ProfileRow | null> {
+  const supabase = createSupabaseBrowserClient();
+  const user = await getBrowserUser();
 
   if (!user) {
     return null;
@@ -49,24 +51,4 @@ export async function getCurrentProfile(): Promise<ProfileRow | null> {
   } catch {
     return null;
   }
-}
-
-export async function requireProfile() {
-  const profile = await getCurrentProfile();
-
-  if (!profile) {
-    redirect(ROUTES.login);
-  }
-
-  return profile;
-}
-
-export async function requireRole(expectedRole: Role) {
-  const profile = await requireProfile();
-
-  if (profile.role !== expectedRole) {
-    redirect(getDashboardRoute(profile.role));
-  }
-
-  return profile;
 }

@@ -4,16 +4,18 @@ import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { registerSchema, type RegisterSchema } from '@/features/auth/validations/auth.schema';
 import { registerUser } from '@/features/auth/services/auth-service';
 import { ROUTES } from '@/constants/routes';
-import { ROLES, ROLE_LABELS } from '@/constants/roles';
+import { ROLES, ROLE_LABELS, ROLE_DESCRIPTIONS } from '@/constants/roles';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select } from '@/components/ui/select';
 
 export function RegisterForm() {
+  const router = useRouter();
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
 
@@ -37,7 +39,8 @@ export function RegisterForm() {
         setSuccessMessage('Account created. Check your email to confirm your account before signing in.');
         return;
       }
-      window.location.assign(result.redirectTo);
+      router.replace(result.redirectTo);
+      router.refresh();
     } catch (error) {
       setErrorMessage(error instanceof Error ? error.message : 'Unable to create account.');
     }
@@ -65,6 +68,14 @@ export function RegisterForm() {
           ))}
         </Select>
         {form.formState.errors.role ? <p className="text-sm text-red-600">{form.formState.errors.role.message}</p> : null}
+        <div className="space-y-2 rounded-md border border-slate-200 bg-slate-50 p-3 text-xs text-slate-600">
+          {ROLES.map((role) => (
+            <p key={role}>
+              <span className="font-medium text-slate-900">{ROLE_LABELS[role]}:</span> {ROLE_DESCRIPTIONS[role]}
+              {role === 'admin' ? ' Admin access is intended for platform owners and internal accounts.' : ''}
+            </p>
+          ))}
+        </div>
       </div>
       <div className="grid gap-5 sm:grid-cols-2">
         <div className="space-y-2">

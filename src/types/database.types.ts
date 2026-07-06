@@ -70,6 +70,7 @@ export interface Database {
         assigned_to: string | null;
         title: string;
         description: string | null;
+        type: 'bug' | 'change_request' | null;
         steps_to_reproduce: string | null;
         expected_result: string | null;
         actual_result: string | null;
@@ -78,7 +79,7 @@ export interface Database {
         page_url: string | null;
         priority: 'low' | 'medium' | 'high' | 'urgent' | null;
         severity: 'minor' | 'major' | 'critical' | 'blocker' | null;
-        status: 'new' | 'accepted' | 'in_progress' | 'fixed' | 'client_review' | 'reopened' | 'closed' | 'rejected' | null;
+        status: 'open' | 'in_progress' | 'declined' | 'completed' | null;
         due_date: string | null;
         created_at: string | null;
         updated_at: string | null;

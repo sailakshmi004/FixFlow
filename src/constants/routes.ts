@@ -20,6 +20,7 @@ export const ROUTES = {
   client: {
     dashboard: '/client/dashboard',
     projects: '/client/projects',
+    reportBug: '/client/bugs/new',
     bugs: '/client/bugs',
     invoices: '/client/invoices',
     settings: '/client/settings'
@@ -64,7 +65,7 @@ export function getRoleNavItems(role: Role): NavItem[] {
     return [
       { label: 'Dashboard', href: ROUTES.client.dashboard, description: 'Overview' },
       { label: 'My Projects', href: ROUTES.client.projects, description: 'Assigned work' },
-      { label: 'Report Bug', href: ROUTES.client.bugs, description: 'Share an issue' },
+      { label: 'Report Bug', href: ROUTES.client.reportBug, description: 'Share an issue' },
       { label: 'My Bugs', href: ROUTES.client.bugs, description: 'Track progress' },
       { label: 'Invoices', href: ROUTES.client.invoices, description: 'View invoices' },
       { label: 'Settings', href: ROUTES.client.settings, description: 'Profile settings' }

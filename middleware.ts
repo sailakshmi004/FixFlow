@@ -1,10 +1,20 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createServerClient } from '@supabase/ssr';
-import { ROUTES, getDashboardRoute, isAuthRoute, isProtectedRoute } from '@/constants/routes';
-import { DEFAULT_ROLE, type Role } from '@/constants/roles';
-import type { Database } from '@/types/database.types';
+import { ROUTES, isProtectedRoute } from '@/constants/routes';
 
 export async function middleware(request: NextRequest) {
+  const pathname = request.nextUrl.pathname;
+
+  // Public and auth pages should not trigger a Supabase session lookup.
+  // That prevents stale refresh tokens from breaking /login and the homepage.
+  if (!isProtectedRoute(pathname)) {
+    return NextResponse.next({
+      request: {
+        headers: request.headers
+      }
+    });
+  }
+
   let response = NextResponse.next({
     request: {
       headers: request.headers
@@ -32,15 +42,13 @@ export async function middleware(request: NextRequest) {
     }
   );
 
-  const {
-    data: { user }
-  } = await supabase.auth.getUser();
+  let user = null;
 
-  const pathname = request.nextUrl.pathname;
-
-  if (isAuthRoute(pathname) && user) {
-    const role = (user.user_metadata?.role as Role | undefined) ?? DEFAULT_ROLE;
-    return NextResponse.redirect(new URL(getDashboardRoute(role), request.url));
+  try {
+    const result = await supabase.auth.getUser();
+    user = result.data.user;
+  } catch {
+    user = null;
   }
 
   if (isProtectedRoute(pathname) && !user) {

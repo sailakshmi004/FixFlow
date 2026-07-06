@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import Link from 'next/link';
-import { useSearchParams } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { loginSchema, type LoginSchema } from '@/features/auth/validations/auth.schema';
 import { loginUser } from '@/features/auth/services/auth-service';
 import { ROUTES } from '@/constants/routes';
@@ -13,6 +13,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 
 export function LoginForm() {
+  const router = useRouter();
   const searchParams = useSearchParams();
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
@@ -29,8 +30,8 @@ export function LoginForm() {
       setErrorMessage(null);
       const result = await loginUser(values);
       const nextPath = searchParams.get('next') ?? result.redirectTo;
-      await new Promise((resolve) => setTimeout(resolve, 150));
-      window.location.assign(nextPath);
+      router.replace(nextPath as never);
+      router.refresh();
     } catch (error) {
       setErrorMessage(error instanceof Error ? error.message : 'Unable to log in.');
     }
