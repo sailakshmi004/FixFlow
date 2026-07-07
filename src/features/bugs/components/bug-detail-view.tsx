@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/button';
 import { getBugById, updateBugStatus } from '@/features/bugs/services/bug-service';
 import { BugComments } from '@/features/bugs/components/bug-comments';
 import { BugAttachments } from '@/features/bugs/components/bug-attachments';
+import { BugActivityTimeline } from '@/features/bugs/components/bug-activity-timeline';
 import type { BugWithRelations } from '@/features/bugs/types/bug.types';
 import type { BugStatus } from '@/constants/statuses';
 import type { Role } from '@/types/database.types';
@@ -176,6 +177,7 @@ export function BugDetailView({ bugId, role }: BugDetailViewProps) {
       </div>
 
       <BugAttachments bugId={bugId} />
+      <BugActivityTimeline bugId={bugId} />
       <BugComments bugId={bugId} />
     </div>
   );

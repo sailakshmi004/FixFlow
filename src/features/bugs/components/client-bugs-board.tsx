@@ -4,6 +4,7 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 import Link from 'next/link';
 import { Plus, Bug, AlertTriangle, Clock, CheckCircle2, ListTodo } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { createSupabaseBrowserClient } from '@/lib/supabase/client';
 import { getClientBugs } from '@/features/bugs/services/bug-service';
 import type { BugWithRelations } from '@/features/bugs/types/bug.types';
 import { ROUTES } from '@/constants/routes';
@@ -39,6 +40,12 @@ export function ClientBugsBoard() {
   }, []);
 
   useEffect(() => { void loadBugs(); }, [loadBugs]);
+
+  useEffect(() => {
+    const supabase = createSupabaseBrowserClient();
+    const channel = supabase.channel('client-bugs-realtime').on('postgres_changes', { event: '*', schema: 'public', table: 'bugs' }, () => { void loadBugs(); }).subscribe();
+    return () => { supabase.removeChannel(channel); };
+  }, [loadBugs]);
 
   const stats = useMemo(() => ({
     total: bugs.length,

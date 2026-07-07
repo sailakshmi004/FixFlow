@@ -1,6 +1,8 @@
-import { ComingSoon } from '@/components/layout/coming-soon';
+import { ProfileSettings } from '@/features/auth/components/profile-settings';
+
+export const dynamic = 'force-dynamic';
 
 export default function ClientSettingsPage() {
-  return <ComingSoon title="Settings" description="Client settings will be expanded later." />;
+  return <ProfileSettings />;
 }
 

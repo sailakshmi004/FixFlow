@@ -36,3 +36,14 @@ export type BugAttachmentRow = {
   file_size: number | null;
   created_at: string | null;
 };
+
+export type BugActivityRow = {
+  id: string;
+  bug_id: string;
+  user_id: string;
+  action: string;
+  old_value: unknown;
+  new_value: unknown;
+  created_at: string | null;
+  user: { id: string; full_name: string; email: string } | null;
+};

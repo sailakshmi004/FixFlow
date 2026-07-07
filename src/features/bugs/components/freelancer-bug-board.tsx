@@ -4,6 +4,7 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 import Link from 'next/link';
 import { Bug, CheckCircle2, Clock, AlertTriangle, ListTodo } from 'lucide-react';
 import { Select } from '@/components/ui/select';
+import { createSupabaseBrowserClient } from '@/lib/supabase/client';
 import { getFreelancerBugs, updateBugStatus } from '@/features/bugs/services/bug-service';
 import type { BugWithRelations } from '@/features/bugs/types/bug.types';
 import type { BugStatus } from '@/constants/statuses';
@@ -58,6 +59,12 @@ export function FreelancerBugBoard() {
   }, []);
 
   useEffect(() => { void loadBugs(); }, [loadBugs]);
+
+  useEffect(() => {
+    const supabase = createSupabaseBrowserClient();
+    const channel = supabase.channel('bugs-realtime').on('postgres_changes', { event: '*', schema: 'public', table: 'bugs' }, () => { void loadBugs(); }).subscribe();
+    return () => { supabase.removeChannel(channel); };
+  }, [loadBugs]);
 
   const stats = useMemo(() => ({
     total: bugs.length,

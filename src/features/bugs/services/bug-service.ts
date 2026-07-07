@@ -1,7 +1,32 @@
 import { createSupabaseBrowserClient } from '@/lib/supabase/client';
 import { getBrowserProfile, getBrowserUser } from '@/features/auth/services/browser-session';
-import type { BugFormValues, BugWithRelations, BugCommentRow, BugAttachmentRow } from '@/features/bugs/types/bug.types';
+import { createNotification } from '@/features/notifications/services/notification-service';
+import type { BugFormValues, BugWithRelations, BugCommentRow, BugAttachmentRow, BugActivityRow } from '@/features/bugs/types/bug.types';
 import type { BugStatus } from '@/constants/statuses';
+
+async function logActivity(bugId: string, action: string, oldValue?: unknown, newValue?: unknown) {
+  const supabase = createSupabaseBrowserClient();
+  const profile = await getBrowserProfile();
+  if (!profile) return;
+  await supabase.from('bug_activity_logs').insert({
+    bug_id: bugId,
+    user_id: profile.id,
+    action,
+    old_value: oldValue ?? null,
+    new_value: newValue ?? null,
+  } as never);
+}
+
+export async function getBugActivity(bugId: string): Promise<BugActivityRow[]> {
+  const supabase = createSupabaseBrowserClient();
+  const { data, error } = await supabase
+    .from('bug_activity_logs')
+    .select('*, user:profiles(id, full_name, email)')
+    .eq('bug_id', bugId)
+    .order('created_at', { ascending: false });
+  if (error) throw error;
+  return (data ?? []) as BugActivityRow[];
+}
 
 export async function getFreelancerBugs(): Promise<BugWithRelations[]> {
   const supabase = createSupabaseBrowserClient();
@@ -133,13 +158,37 @@ export async function createBug(values: BugFormValues): Promise<BugWithRelations
     .single();
 
   if (error) throw error;
-  return data as BugWithRelations;
+
+  const bug = data as BugWithRelations;
+  await logActivity(bug.id, 'bug_created', null, { title: bug.title, type: bug.type, priority: bug.priority, severity: bug.severity });
+
+  if (assigneeId && assigneeId !== profile.id) {
+    await createNotification(assigneeId, 'New issue reported', `${bug.title} — ${bug.project?.name ?? 'Unknown project'}`, 'bug_created', `/freelancer/bugs/${bug.id}`);
+  }
+
+  return bug;
 }
 
 export async function updateBugStatus(bugId: string, status: BugStatus): Promise<void> {
   const supabase = createSupabaseBrowserClient();
+  const profile = await getBrowserProfile();
+  if (!profile) throw new Error('Unable to resolve your profile.');
+
+  const { data: bug } = await supabase
+    .from('bugs')
+    .select('title, status, reported_by, project:projects(name)')
+    .eq('id', bugId)
+    .single();
+  const currentBug = bug as { title: string; status: string | null; reported_by: string | null; project: { name: string } | null } | null;
+
   const { error } = await supabase.from('bugs').update({ status } as never).eq('id', bugId);
   if (error) throw error;
+
+  await logActivity(bugId, 'status_change', currentBug?.status, status);
+
+  if (currentBug && currentBug.reported_by && currentBug.reported_by !== profile.id) {
+    await createNotification(currentBug.reported_by, `Issue ${status.replace('_', ' ')}`, `${currentBug.title} — ${currentBug.project?.name ?? ''}`, 'status_change', `/client/bugs/${bugId}`);
+  }
 }
 
 export async function getBugComments(bugId: string): Promise<BugCommentRow[]> {
@@ -166,6 +215,24 @@ export async function addComment(bugId: string, comment: string): Promise<BugCom
     .single();
 
   if (error) throw error;
+
+  await logActivity(bugId, 'comment_added', null, { comment: comment.substring(0, 100) });
+
+  const { data: bug } = await supabase
+    .from('bugs')
+    .select('title, reported_by, assigned_to, project:projects(name)')
+    .eq('id', bugId)
+    .single();
+  const currentBug = bug as { title: string; reported_by: string | null; assigned_to: string | null; project: { name: string } | null } | null;
+
+  if (currentBug) {
+    const targets = [currentBug.reported_by, currentBug.assigned_to].filter((id): id is string => id !== null && id !== profile.id);
+    const uniqueTargets = [...new Set(targets)];
+    await Promise.all(uniqueTargets.map((uid) =>
+      createNotification(uid, 'New comment', `${profile.full_name || profile.email} commented on "${currentBug.title}"`, 'comment')
+    ));
+  }
+
   return data as BugCommentRow;
 }
 

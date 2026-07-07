@@ -128,6 +128,7 @@ CREATE TABLE IF NOT EXISTS notifications (
   title text NOT NULL,
   message text NOT NULL,
   type text,
+  link text,
   is_read boolean DEFAULT false,
   created_at timestamptz DEFAULT now()
 );

@@ -3,13 +3,14 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Bell, Search, LogOut, Menu } from 'lucide-react';
+import { Search, LogOut, Menu } from 'lucide-react';
 import { ROUTES, getRoleNavItems } from '@/constants/routes';
 import { ROLE_LABELS, type Role } from '@/constants/roles';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { cn } from '@/lib/utils';
 import { logoutUser } from '@/features/auth/services/auth-service';
+import { NotificationDropdown } from '@/features/notifications/components/notification-dropdown';
 
 type DashboardShellProps = {
   role: Role;
@@ -94,9 +95,7 @@ export function DashboardShell({ role, fullName, children }: DashboardShellProps
                 <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
                 <Input className="h-11 rounded-full bg-white pl-10" placeholder="Search bugs, projects, clients..." />
               </div>
-              <Button variant="outline" size="icon" className="ml-auto">
-                <Bell className="h-4 w-4" />
-              </Button>
+              <NotificationDropdown />
               <Button
                 variant="outline"
                 className="gap-2"

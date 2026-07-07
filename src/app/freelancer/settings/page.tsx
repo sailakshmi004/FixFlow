@@ -1,6 +1,8 @@
-import { ComingSoon } from '@/components/layout/coming-soon';
+import { ProfileSettings } from '@/features/auth/components/profile-settings';
+
+export const dynamic = 'force-dynamic';
 
 export default function FreelancerSettingsPage() {
-  return <ComingSoon title="Settings" description="Workspace settings will be expanded later." />;
+  return <ProfileSettings />;
 }
 
