@@ -10,10 +10,14 @@ import type { BugWithRelations } from '@/features/bugs/types/bug.types';
 import { ROUTES } from '@/constants/routes';
 
 const STATUS_STYLES: Record<string, { label: string; classes: string }> = {
-  open: { label: 'Open', classes: 'bg-amber-50/80 text-amber-700 border border-amber-200/60' },
+  new: { label: 'New', classes: 'bg-amber-50/80 text-amber-700 border border-amber-200/60' },
+  accepted: { label: 'Accepted', classes: 'bg-sky-50/80 text-sky-700 border border-sky-200/60' },
   in_progress: { label: 'In progress', classes: 'bg-blue-50/80 text-blue-700 border border-blue-200/60' },
-  declined: { label: 'Declined', classes: 'bg-red-50/80 text-red-700 border border-red-200/60' },
-  completed: { label: 'Completed', classes: 'bg-emerald-50/80 text-emerald-700 border border-emerald-200/60' },
+  fixed: { label: 'Fixed', classes: 'bg-teal-50/80 text-teal-700 border border-teal-200/60' },
+  client_review: { label: 'Client review', classes: 'bg-purple-50/80 text-purple-700 border border-purple-200/60' },
+  reopened: { label: 'Reopened', classes: 'bg-orange-50/80 text-orange-700 border border-orange-200/60' },
+  closed: { label: 'Closed', classes: 'bg-emerald-50/80 text-emerald-700 border border-emerald-200/60' },
+  rejected: { label: 'Rejected', classes: 'bg-red-50/80 text-red-700 border border-red-200/60' },
 };
 
 const TYPE_STYLES: Record<string, { label: string; classes: string }> = {
@@ -49,9 +53,10 @@ export function ClientBugsBoard() {
 
   const stats = useMemo(() => ({
     total: bugs.length,
-    open: bugs.filter((b) => b.status === 'open').length,
+    open: bugs.filter((b) => b.status === 'new').length,
     inProgress: bugs.filter((b) => b.status === 'in_progress').length,
-    completed: bugs.filter((b) => b.status === 'completed').length,
+    clientReview: bugs.filter((b) => b.status === 'client_review').length,
+    closed: bugs.filter((b) => b.status === 'closed').length,
   }), [bugs]);
 
   return (
@@ -74,7 +79,8 @@ export function ClientBugsBoard() {
           { label: 'Total', value: stats.total, icon: ListTodo },
           { label: 'Open', value: stats.open, icon: AlertTriangle },
           { label: 'In progress', value: stats.inProgress, icon: Clock },
-          { label: 'Completed', value: stats.completed, icon: CheckCircle2 },
+          { label: 'Needs review', value: stats.clientReview, icon: CheckCircle2 },
+          { label: 'Closed', value: stats.closed, icon: CheckCircle2 },
         ].map((s) => (
           <div key={s.label} className="rounded-2xl border border-slate-200/70 bg-white/85 px-5 py-4 backdrop-blur-xl">
             <div className="flex items-center justify-between">
@@ -117,7 +123,7 @@ export function ClientBugsBoard() {
           ) : (
             <div className="space-y-3">
               {bugs.map((bug) => {
-                const statusStyle = STATUS_STYLES[bug.status ?? 'open'] ?? STATUS_STYLES.open;
+                const statusStyle = STATUS_STYLES[bug.status ?? 'new'] ?? STATUS_STYLES.new;
                 const typeStyle = TYPE_STYLES[bug.type ?? 'bug'] ?? TYPE_STYLES.bug;
 
                 return (

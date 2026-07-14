@@ -64,3 +64,23 @@ export async function archiveClient(clientId: string) {
     throw error;
   }
 }
+
+export async function updateClient(clientId: string, values: Partial<ClientFormValues>) {
+  const supabase = createSupabaseBrowserClient();
+
+  const { error } = await supabase
+    .from('clients')
+    .update({
+      name: values.name,
+      email: values.email,
+      phone: values.phone || null,
+      company_name: values.companyName || null,
+      notes: values.notes || null,
+      status: values.status
+    } as never)
+    .eq('id', clientId);
+
+  if (error) {
+    throw error;
+  }
+}

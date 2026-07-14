@@ -1,6 +1,7 @@
 'use client';
 
 import { useCallback, useEffect, useMemo, useState } from 'react';
+import Link from 'next/link';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
@@ -125,7 +126,9 @@ export function ClientManagementBoard() {
                 <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
                   <div className="min-w-0 space-y-1">
                     <div className="flex flex-wrap items-center gap-2">
-                      <p className="font-semibold text-slate-950">{client.name}</p>
+                      <Link href={`/freelancer/clients/${client.id}`} className="font-semibold text-slate-950 hover:text-slate-600">
+                        {client.name}
+                      </Link>
                       <Badge variant={getStatusTone(client.status)}>{client.status ?? 'active'}</Badge>
                     </div>
                     <p className="text-sm text-slate-600">{client.email}</p>

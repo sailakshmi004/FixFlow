@@ -1,7 +1,7 @@
 import { createSupabaseBrowserClient } from '@/lib/supabase/client';
 import { getBrowserProfile, getBrowserUser } from '@/features/auth/services/browser-session';
 import type { ClientRow, ProjectRow } from '@/types/database.types';
-import type { ProjectFormValues } from '@/features/projects/types/project.types';
+import type { ProjectFormValues, ProjectFormInput } from '@/features/projects/types/project.types';
 
 export type ProjectWithClient = ProjectRow & {
   client?: Pick<ClientRow, 'id' | 'name' | 'email' | 'company_name' | 'status'> | null;
@@ -96,6 +96,30 @@ export async function archiveProject(projectId: string) {
   const { error } = await supabase
     .from('projects')
     .update({ status: 'cancelled' } as never)
+    .eq('id', projectId);
+
+  if (error) {
+    throw error;
+  }
+}
+
+export async function updateProject(projectId: string, values: Partial<ProjectFormInput>) {
+  const supabase = createSupabaseBrowserClient();
+
+  const { error } = await supabase
+    .from('projects')
+    .update({
+      client_id: values.clientId,
+      name: values.name,
+      description: values.description || null,
+      tech_stack: values.techStack || null,
+      project_url: values.projectUrl || null,
+      github_url: values.githubUrl || null,
+      status: values.status,
+      start_date: values.startDate || null,
+      deadline: values.deadline || null,
+      budget: values.budget ? Number(values.budget) : null,
+    } as never)
     .eq('id', projectId);
 
   if (error) {

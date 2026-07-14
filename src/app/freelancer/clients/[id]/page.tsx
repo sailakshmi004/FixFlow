@@ -1,6 +1,13 @@
-import { ComingSoon } from '@/components/layout/coming-soon';
+import { ClientDetailView } from '@/features/clients/components/client-detail-view';
 
-export default function FreelancerClientDetailPage() {
-  return <ComingSoon title="Client details" description="Detailed client pages will be implemented in Phase 2." />;
+export const dynamic = 'force-dynamic';
+
+type PageProps = {
+  params: Promise<{ id: string }>;
+};
+
+export default async function FreelancerClientDetailPage({ params }: PageProps) {
+  const { id } = await params;
+  return <ClientDetailView clientId={id} />;
 }
 

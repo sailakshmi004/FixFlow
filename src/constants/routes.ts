@@ -17,6 +17,7 @@ export const ROUTES = {
     projects: '/freelancer/projects',
     bugs: '/freelancer/bugs',
     invoices: '/freelancer/invoices',
+    timeTracking: '/freelancer/time-tracking',
     settings: '/freelancer/settings'
   },
   client: {
@@ -58,6 +59,7 @@ export function getRoleNavItems(role: Role): NavItem[] {
       { label: 'Clients', href: ROUTES.freelancer.clients, description: 'Manage clients' },
       { label: 'Projects', href: ROUTES.freelancer.projects, description: 'Manage projects' },
       { label: 'Bugs', href: ROUTES.freelancer.bugs, description: 'Track issues' },
+      { label: 'Time', href: ROUTES.freelancer.timeTracking, description: 'Track hours' },
       { label: 'Invoices', href: ROUTES.freelancer.invoices, description: 'Track payment' },
       { label: 'Settings', href: ROUTES.freelancer.settings, description: 'Profile settings' }
     ];

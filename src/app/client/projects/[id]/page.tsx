@@ -1,6 +1,13 @@
-import { ComingSoon } from '@/components/layout/coming-soon';
+import { ClientProjectDetailView } from '@/features/projects/components/client-project-detail-view';
 
-export default function ClientProjectDetailPage() {
-  return <ComingSoon title="Project details" description="Client project detail pages will be implemented in Phase 2." />;
+export const dynamic = 'force-dynamic';
+
+type PageProps = {
+  params: Promise<{ id: string }>;
+};
+
+export default async function ClientProjectDetailPage({ params }: PageProps) {
+  const { id } = await params;
+  return <ClientProjectDetailView projectId={id} />;
 }
 

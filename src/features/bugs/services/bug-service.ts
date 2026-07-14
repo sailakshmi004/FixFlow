@@ -152,7 +152,7 @@ export async function createBug(values: BugFormValues): Promise<BugWithRelations
       type: values.type,
       priority: values.priority,
       severity: values.severity,
-      status: 'open',
+      status: 'new',
     } as never)
     .select('*, project:projects(id, name, freelancer_id), reporter:profiles!bugs_reported_by_fkey(id, full_name, email), assignee:profiles!bugs_assigned_to_fkey(id, full_name, email)')
     .single();
@@ -176,18 +176,51 @@ export async function updateBugStatus(bugId: string, status: BugStatus): Promise
 
   const { data: bug } = await supabase
     .from('bugs')
-    .select('title, status, reported_by, project:projects(name)')
+    .select('title, status, reported_by, assigned_to, project:projects(name, freelancer_id)')
     .eq('id', bugId)
     .single();
-  const currentBug = bug as { title: string; status: string | null; reported_by: string | null; project: { name: string } | null } | null;
+  const currentBug = bug as { title: string; status: string | null; reported_by: string | null; assigned_to: string | null; project: { name: string; freelancer_id: string | null } | null } | null;
+
+  if (!currentBug) throw new Error('Bug not found.');
+
+  // Validate status transitions
+  const validTransitions: Record<string, BugStatus[]> = {
+    'new': ['accepted', 'in_progress', 'rejected'],
+    'accepted': ['in_progress', 'rejected'],
+    'in_progress': ['fixed', 'rejected'],
+    'fixed': ['client_review'],
+    'client_review': ['closed', 'reopened'],
+    'reopened': ['in_progress', 'rejected'],
+    'closed': ['reopened'],
+    'rejected': [],
+  };
+
+  const currentStatus = currentBug.status ?? 'new';
+  const allowed = validTransitions[currentStatus] ?? [];
+
+  if (!allowed.includes(status)) {
+    throw new Error(`Cannot transition from "${currentStatus}" to "${status}".`);
+  }
 
   const { error } = await supabase.from('bugs').update({ status } as never).eq('id', bugId);
   if (error) throw error;
 
-  await logActivity(bugId, 'status_change', currentBug?.status, status);
+  await logActivity(bugId, 'status_change', currentStatus, status);
 
-  if (currentBug && currentBug.reported_by && currentBug.reported_by !== profile.id) {
-    await createNotification(currentBug.reported_by, `Issue ${status.replace('_', ' ')}`, `${currentBug.title} — ${currentBug.project?.name ?? ''}`, 'status_change', `/client/bugs/${bugId}`);
+  // Notify the other party
+  const isFreelancer = profile.role === 'freelancer';
+  const notifyTargetId = isFreelancer ? currentBug.reported_by : currentBug.assigned_to;
+
+  if (notifyTargetId && notifyTargetId !== profile.id) {
+    const targetRole = isFreelancer ? 'client' : 'freelancer';
+    const targetPath = targetRole === 'client' ? '/client/bugs/' : '/freelancer/bugs/';
+    await createNotification(
+      notifyTargetId,
+      `Issue ${status.replace('_', ' ')}`,
+      `${currentBug.title} — ${currentBug.project?.name ?? ''}`,
+      'status_change',
+      `${targetPath}${bugId}`
+    );
   }
 }
 

@@ -121,6 +121,21 @@ CREATE TABLE IF NOT EXISTS invoices (
   updated_at timestamptz DEFAULT now()
 );
 
+-- Time entries table (for freelancer time tracking)
+CREATE TABLE IF NOT EXISTS time_entries (
+  id uuid PRIMARY KEY DEFAULT uuid_generate_v4(),
+  freelancer_id uuid REFERENCES profiles(id) ON DELETE SET NULL,
+  project_id uuid REFERENCES projects(id) ON DELETE SET NULL,
+  description text,
+  start_time timestamptz NOT NULL DEFAULT now(),
+  end_time timestamptz,
+  duration_seconds bigint,
+  hourly_rate numeric(12,2),
+  is_running boolean DEFAULT false,
+  created_at timestamptz DEFAULT now(),
+  updated_at timestamptz DEFAULT now()
+);
+
 -- Notifications table
 CREATE TABLE IF NOT EXISTS notifications (
   id uuid PRIMARY KEY DEFAULT uuid_generate_v4(),
@@ -143,6 +158,7 @@ ALTER TABLE bug_attachments ENABLE ROW LEVEL SECURITY;
 ALTER TABLE bug_activity_logs ENABLE ROW LEVEL SECURITY;
 ALTER TABLE invoices ENABLE ROW LEVEL SECURITY;
 ALTER TABLE notifications ENABLE ROW LEVEL SECURITY;
+ALTER TABLE time_entries ENABLE ROW LEVEL SECURITY;
 
 -- Basic RLS policies (adjust as needed)
 -- Drop existing policies first so the script is idempotent
@@ -200,7 +216,12 @@ CREATE POLICY "Freelancers can create bugs" ON bugs FOR INSERT WITH CHECK (
   ))
 );
 
--- Storage: create bucket for bug attachments
+-- Time entries: freelancers can CRUD their own entries
+DROP POLICY IF EXISTS "Freelancers manage own time entries" ON time_entries;
+CREATE POLICY "Freelancers manage own time entries" ON time_entries FOR ALL USING (
+  EXISTS (SELECT 1 FROM profiles WHERE id = time_entries.freelancer_id AND auth_user_id = auth.uid())
+);
+
 INSERT INTO storage.buckets (id, name, public) VALUES ('bug-attachments', 'bug-attachments', true)
 ON CONFLICT (id) DO NOTHING;
 

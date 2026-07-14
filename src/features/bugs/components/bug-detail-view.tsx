@@ -13,10 +13,14 @@ import type { BugStatus } from '@/constants/statuses';
 import type { Role } from '@/types/database.types';
 
 const STATUS_STYLES: Record<string, { label: string; classes: string }> = {
-  open: { label: 'Open', classes: 'bg-amber-50/80 text-amber-700 border border-amber-200/60' },
+  new: { label: 'New', classes: 'bg-amber-50/80 text-amber-700 border border-amber-200/60' },
+  accepted: { label: 'Accepted', classes: 'bg-sky-50/80 text-sky-700 border border-sky-200/60' },
   in_progress: { label: 'In progress', classes: 'bg-blue-50/80 text-blue-700 border border-blue-200/60' },
-  declined: { label: 'Declined', classes: 'bg-red-50/80 text-red-700 border border-red-200/60' },
-  completed: { label: 'Completed', classes: 'bg-emerald-50/80 text-emerald-700 border border-emerald-200/60' },
+  fixed: { label: 'Fixed', classes: 'bg-teal-50/80 text-teal-700 border border-teal-200/60' },
+  client_review: { label: 'Client review', classes: 'bg-purple-50/80 text-purple-700 border border-purple-200/60' },
+  reopened: { label: 'Reopened', classes: 'bg-orange-50/80 text-orange-700 border border-orange-200/60' },
+  closed: { label: 'Closed', classes: 'bg-emerald-50/80 text-emerald-700 border border-emerald-200/60' },
+  rejected: { label: 'Rejected', classes: 'bg-red-50/80 text-red-700 border border-red-200/60' },
 };
 
 const TYPE_STYLES: Record<string, { label: string; classes: string }> = {
@@ -26,20 +30,41 @@ const TYPE_STYLES: Record<string, { label: string; classes: string }> = {
 
 function getFreelancerActions(status: string | null): { label: string; nextStatus: BugStatus }[] {
   switch (status) {
-    case 'open': return [{ label: 'Start working', nextStatus: 'in_progress' }, { label: 'Decline', nextStatus: 'declined' }];
-    case 'in_progress': return [{ label: 'Mark complete', nextStatus: 'completed' }, { label: 'Decline', nextStatus: 'declined' }];
+    case 'new': return [
+      { label: 'Accept', nextStatus: 'accepted' },
+      { label: 'Start working', nextStatus: 'in_progress' },
+      { label: 'Reject', nextStatus: 'rejected' },
+    ];
+    case 'accepted': return [
+      { label: 'Start working', nextStatus: 'in_progress' },
+      { label: 'Reject', nextStatus: 'rejected' },
+    ];
+    case 'in_progress': return [
+      { label: 'Mark fixed', nextStatus: 'fixed' },
+      { label: 'Reject', nextStatus: 'rejected' },
+    ];
+    case 'fixed': return [
+      { label: 'Send for review', nextStatus: 'client_review' },
+    ];
+    case 'reopened': return [
+      { label: 'Start working', nextStatus: 'in_progress' },
+      { label: 'Reject', nextStatus: 'rejected' },
+    ];
     default: return [];
   }
 }
 
 function getClientActions(status: string | null): { label: string; nextStatus: BugStatus }[] {
-  if (status === 'in_progress' || status === 'open') {
-    return [{ label: 'Mark complete', nextStatus: 'completed' }];
+  switch (status) {
+    case 'client_review': return [
+      { label: 'Approve Fix', nextStatus: 'closed' },
+      { label: 'Request Changes', nextStatus: 'reopened' },
+    ];
+    case 'closed': return [
+      { label: 'Reopen', nextStatus: 'reopened' },
+    ];
+    default: return [];
   }
-  if (status === 'completed') {
-    return [{ label: 'Reopen', nextStatus: 'open' }];
-  }
-  return [];
 }
 
 type BugDetailViewProps = {
@@ -104,7 +129,7 @@ export function BugDetailView({ bugId, role }: BugDetailViewProps) {
     );
   }
 
-  const statusStyle = STATUS_STYLES[bug.status ?? 'open'] ?? STATUS_STYLES.open;
+  const statusStyle = STATUS_STYLES[bug.status ?? 'new'] ?? STATUS_STYLES.new;
   const typeStyle = TYPE_STYLES[bug.type ?? 'bug'] ?? TYPE_STYLES.bug;
 
   return (
@@ -133,6 +158,27 @@ export function BugDetailView({ bugId, role }: BugDetailViewProps) {
             <h2 className="text-sm font-medium text-slate-700">Description</h2>
             <p className="mt-1.5 whitespace-pre-wrap text-sm leading-relaxed text-slate-600">{bug.description || 'No description provided.'}</p>
           </div>
+
+          {bug.steps_to_reproduce && (
+            <div>
+              <h2 className="text-sm font-medium text-slate-700">Steps to reproduce</h2>
+              <p className="mt-1.5 whitespace-pre-wrap text-sm leading-relaxed text-slate-600">{bug.steps_to_reproduce}</p>
+            </div>
+          )}
+
+          {bug.expected_result && (
+            <div>
+              <h2 className="text-sm font-medium text-slate-700">Expected result</h2>
+              <p className="mt-1.5 whitespace-pre-wrap text-sm leading-relaxed text-slate-600">{bug.expected_result}</p>
+            </div>
+          )}
+
+          {bug.actual_result && (
+            <div>
+              <h2 className="text-sm font-medium text-slate-700">Actual result</h2>
+              <p className="mt-1.5 whitespace-pre-wrap text-sm leading-relaxed text-slate-600">{bug.actual_result}</p>
+            </div>
+          )}
 
           <div className="grid gap-px rounded-2xl border border-slate-200/70 bg-slate-100 overflow-hidden sm:grid-cols-2">
             {[

@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import Link from 'next/link';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { getClientProjects, type ProjectWithClient } from '@/features/projects/services/project-service';
@@ -48,7 +49,9 @@ export function ClientProjectsBoard() {
             <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
               <div className="space-y-1">
                 <div className="flex flex-wrap items-center gap-2">
-                  <p className="font-semibold text-slate-950">{project.name}</p>
+                  <Link href={`/client/projects/${project.id}`} className="font-semibold text-slate-950 hover:text-slate-600">
+                    {project.name}
+                  </Link>
                   <Badge variant={getProjectTone(project.status)}>{project.status ?? 'active'}</Badge>
                 </div>
                 <p className="text-sm text-slate-600">{project.description || 'No description added yet.'}</p>

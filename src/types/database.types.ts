@@ -79,7 +79,7 @@ export interface Database {
         page_url: string | null;
         priority: 'low' | 'medium' | 'high' | 'urgent' | null;
         severity: 'minor' | 'major' | 'critical' | 'blocker' | null;
-        status: 'open' | 'in_progress' | 'declined' | 'completed' | null;
+        status: 'new' | 'accepted' | 'in_progress' | 'fixed' | 'client_review' | 'reopened' | 'closed' | 'rejected' | null;
         due_date: string | null;
         created_at: string | null;
         updated_at: string | null;
@@ -133,6 +133,19 @@ export interface Database {
         is_read: boolean | null;
         created_at: string | null;
       }>;
+      time_entries: TableShape<{
+        id: string;
+        freelancer_id: string | null;
+        project_id: string | null;
+        description: string | null;
+        start_time: string;
+        end_time: string | null;
+        duration_seconds: number | null;
+        hourly_rate: number | null;
+        is_running: boolean | null;
+        created_at: string | null;
+        updated_at: string | null;
+      }>;
     };
     Views: Record<string, never>;
     Functions: Record<string, never>;
@@ -147,3 +160,5 @@ export type ClientRow = Database['public']['Tables']['clients']['Row'];
 export type ProjectRow = Database['public']['Tables']['projects']['Row'];
 export type BugRow = Database['public']['Tables']['bugs']['Row'];
 export type InvoiceRow = Database['public']['Tables']['invoices']['Row'];
+export type TimeEntryRow = Database['public']['Tables']['time_entries']['Row'];
+export type TimeEntryInsert = Database['public']['Tables']['time_entries']['Insert'];

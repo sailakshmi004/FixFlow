@@ -12,3 +12,5 @@ export type ProjectFormValues = {
   deadline?: string;
   budget?: string;
 };
+
+export type ProjectFormInput = ProjectFormValues;
